@@ -1,15 +1,30 @@
 import React from "react";
-import InputAdornments from './InputAdornments.jsx'
+import TemperatureInput from "./TemperatureInput";
 
-import "./index.css";
+class Widget extends React.Component {
+  constructor(props) {
+    super(props);
+    this.handleTempChange = this.handleTempChange.bind(this);
+    this.state = { temperature: "72" };
+  }
 
-function Widget() {
+  handleTempChange(temperature) {
+    this.setState({ temperature });
+  }
+
+  render() {
+    const temperature = this.state.temperature;
 
     return (
       <div>
-        <InputAdornments />
+        <p>Current temperature: {temperature}°F</p>
+        <TemperatureInput
+          temperature={temperature}
+          onTemperatureChange={this.handleTempChange}
+        />
       </div>
     );
+  }
 }
 
 export default Widget;
