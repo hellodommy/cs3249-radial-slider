@@ -5,21 +5,21 @@ class Widget extends React.Component {
   constructor(props) {
     super(props);
     this.handleTempChange = this.handleTempChange.bind(this);
-    this.state = { temperature: "72" };
+    this.state = { currTemperature: 72 };
   }
 
-  handleTempChange(temperature) {
-    this.setState({ temperature });
+  handleTempChange(currTemperature) {
+    this.setState({ currTemperature });
   }
 
   render() {
-    const temperature = this.state.temperature;
+    const currTemperature = this.state.currTemperature;
 
     return (
       <div>
-        <p>Current temperature: {temperature}°F</p>
+        <p>Current temperature: {currTemperature}°F</p>
         <TemperatureInput
-          temperature={temperature}
+          currTemperature={currTemperature}
           onTemperatureChange={this.handleTempChange}
         />
       </div>

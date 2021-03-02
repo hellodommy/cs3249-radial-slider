@@ -15,15 +15,16 @@ class TemperatureInput extends React.Component {
   }
 
   render() {
-    const temperature = this.props.temperature;
+    const currTemperature = this.props.currTemperature;
     return (
       <FormControl>
         <Input
+          type="number"
           id="current-temperature-input"
-          value={temperature}
+          value={currTemperature}
           onChange={this.handleChange}
           endAdornment={<InputAdornment position="end">°F</InputAdornment>}
-          aria-describedby="standard-weight-helper-text"
+          aria-describedby="current-temperature-input-helper-text"
           inputProps={{
             "aria-label": "currTemp",
           }}
