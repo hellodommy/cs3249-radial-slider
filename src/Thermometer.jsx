@@ -29,7 +29,7 @@ class Thermometer extends React.Component {
   render() {
     const currTemperature = this.props.currTemperature;
     const error = this.state.error;
-
+    console.log(error)
     return (
       <ClickAwayListener onClickAway={this.handleClickAway}>
         <FormControl>
@@ -46,7 +46,7 @@ class Thermometer extends React.Component {
             }}
           />
           <FormHelperText id="current-temperature-input-helper-text">
-            Current Temperature
+            {error ? 'Only between 32°F to 100°F' : 'Current Temperature'}
           </FormHelperText>
         </FormControl>
       </ClickAwayListener>
