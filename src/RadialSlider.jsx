@@ -5,11 +5,11 @@ class RadialSlider extends React.Component {
   constructor(props) {
     super(props);
     this.handleChange = this.handleChange.bind(this);
-    this.state = { targetTemperature: 72 };
+    this.state = { targetTemperature: '72' };
   }
 
-  handleChange(targetTemperature) {
-    this.setState({ targetTemperature });
+  handleChange(event, value) {
+    this.setState({ targetTemperature: value });
   }
 
   render() {
@@ -18,12 +18,13 @@ class RadialSlider extends React.Component {
     return (
       <div>
         <Slider
-          defaultValue={targetTemperature}
-          aria-labelledby="discrete-slider"
+          value={targetTemperature}
+          onChange={this.handleChange}
           valueLabelDisplay="on"
           min={50}
           max={80}
         />
+        <p>Target temperature: {targetTemperature}°F</p>
       </div>
     );
   }
