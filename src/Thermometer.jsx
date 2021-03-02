@@ -4,7 +4,7 @@ import InputAdornment from "@material-ui/core/InputAdornment";
 import FormHelperText from "@material-ui/core/FormHelperText";
 import FormControl from "@material-ui/core/FormControl";
 
-class TemperatureInput extends React.Component {
+class Thermometer extends React.Component {
   constructor(props) {
     super(props);
     this.handleChange = this.handleChange.bind(this);
@@ -37,4 +37,4 @@ class TemperatureInput extends React.Component {
   }
 }
 
-export default TemperatureInput;
+export default Thermometer;

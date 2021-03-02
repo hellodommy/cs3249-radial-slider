@@ -1,38 +1,52 @@
 import React from "react";
-import TemperatureInput from "./TemperatureInput";
+import Thermometer from "./Thermometer";
 import RadialSlider from "./RadialSlider";
 import Grid from "@material-ui/core/Grid";
 
 class Widget extends React.Component {
   constructor(props) {
     super(props);
-    this.handleTempChange = this.handleTempChange.bind(this);
-    this.state = { currTemperature: 72 };
+    this.handleCurrTempChange = this.handleCurrTempChange.bind(this);
+    this.handleTargetTempChange = this.handleTargetTempChange.bind(this);
+    this.state = { currTemperature: 72, targetTemperature: 72 };
   }
 
-  handleTempChange(currTemperature) {
+  handleCurrTempChange(currTemperature) {
     this.setState({ currTemperature });
+  }
+
+  handleTargetTempChange(targetTemperature) {
+      this.setState({ targetTemperature });
   }
 
   render() {
     const currTemperature = this.state.currTemperature;
+    const targetTemperature = this.state.targetTemperature;
 
     return (
       <div>
         <Grid
           container
+          direction="column"
           spacing={3}
-          justify={"center"}
-          style={{ marginTop: "5rem" }}
+          justify="center"
+          alignItems="center"
+          style={{ marginTop: "2rem" }}
         >
           <Grid item xs={4}>
-            <RadialSlider />
+            <p>Target temperature: {targetTemperature}°F</p>
+            <p>Current temperature: {currTemperature}°F</p>
+          </Grid>
+          <Grid item xs={4} style={{ width: "100%" }}>
+            <RadialSlider
+              targetTemperature={targetTemperature}
+              onTemperatureChange={this.handleTargetTempChange}
+            />
           </Grid>
           <Grid item xs={12}>
-            <p>Current temperature: {currTemperature}°F</p>
-            <TemperatureInput
+            <Thermometer
               currTemperature={currTemperature}
-              onTemperatureChange={this.handleTempChange}
+              onTemperatureChange={this.handleCurrTempChange}
             />
           </Grid>
         </Grid>
