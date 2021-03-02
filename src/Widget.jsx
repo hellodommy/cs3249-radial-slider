@@ -1,5 +1,7 @@
 import React from "react";
 import TemperatureInput from "./TemperatureInput";
+import RadialSlider from "./RadialSlider";
+import Grid from "@material-ui/core/Grid";
 
 class Widget extends React.Component {
   constructor(props) {
@@ -17,11 +19,23 @@ class Widget extends React.Component {
 
     return (
       <div>
-        <p>Current temperature: {currTemperature}°F</p>
-        <TemperatureInput
-          currTemperature={currTemperature}
-          onTemperatureChange={this.handleTempChange}
-        />
+        <Grid
+          container
+          spacing={3}
+          justify={"center"}
+          style={{ marginTop: "5rem" }}
+        >
+          <Grid item xs={4}>
+            <RadialSlider />
+          </Grid>
+          <Grid item xs={12}>
+            <p>Current temperature: {currTemperature}°F</p>
+            <TemperatureInput
+              currTemperature={currTemperature}
+              onTemperatureChange={this.handleTempChange}
+            />
+          </Grid>
+        </Grid>
       </div>
     );
   }

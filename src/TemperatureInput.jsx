@@ -30,7 +30,7 @@ class TemperatureInput extends React.Component {
           }}
         />
         <FormHelperText id="current-temperature-input-helper-text">
-          Current Temperature (testing purposes)
+          Current Temperature
         </FormHelperText>
       </FormControl>
     );
