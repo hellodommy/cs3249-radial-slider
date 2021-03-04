@@ -1,7 +1,8 @@
 import React from "react";
 import Thermometer from "./Thermometer";
-import RadialSlider from "./RadialSlider";
+import LinearSlider from "./LinearSlider";
 import Grid from "@material-ui/core/Grid";
+import RadialSlider from "./RadialSlider";
 
 const dT = 2;
 const dTCool = 1.5;
@@ -53,8 +54,11 @@ class Widget extends React.Component {
             <p>Current temperature: {currTemperature}°F</p>
             <p>Mode: {mode}</p>
           </Grid>
+          <Grid>
+            <RadialSlider />
+          </Grid>
           <Grid item xs={4} style={{ width: "100%" }}>
-            <RadialSlider
+            <LinearSlider
               targetTemperature={targetTemperature}
               onTemperatureChange={this.handleTargetTempChange}
             />
