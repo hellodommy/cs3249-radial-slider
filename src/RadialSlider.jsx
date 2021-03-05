@@ -1,10 +1,8 @@
 import React from "react";
 
-function getRad(deg) {
-  return deg / 180 * Math.PI
+function radToDegree(rad) {
+  return rad * 180 / Math.PI;
 }
-
-
 
 class RadialSlider extends React.Component {
   constructor(props) {
@@ -41,7 +39,15 @@ class RadialSlider extends React.Component {
   }
 
   handleMouseMove(e) {
-    this.setState({ xcord: e.screenX, ycord: e.screenY });
+    this.setState({ xcord: e.pageX, ycord: e.pageY });
+    if (this.state.isMouseDown) {
+      const centreX = this.state.windowWidth / 2; // because circle is in horizontal centre of page
+      const centreY = 110; // 10px margin and 100px radius
+      const distFromX = this.state.xcord - centreX;
+      const distFromY = this.state.ycord - centreY;
+      const radians = Math.atan2(distFromY, distFromX)
+      console.log(radToDegree(radians))
+    }
   }
 
   handleMouseDown(e) {
@@ -60,31 +66,29 @@ class RadialSlider extends React.Component {
 
     return (
       <div>
+        <svg width="200px" height="200px">
+          <circle
+            onMouseMove={this.handleMouseMove}
+            onMouseUp={this.handleMouseUp}
+            fill="#9CA3AF"
+            cx="100px"
+            cy="100px"
+            r="100px"
+          />
+          <circle
+            fill="#ffafaf"
+            cx="186.7px"
+            cy="50px"
+            r="10px"
+            onMouseDown={this.handleMouseDown}
+            onMouseUp={this.handleMouseUp}
+            style={{ cursor: "pointer" }}
+          />
+        </svg>
         <p>X-Coord: {xcord}</p>
         <p>Y-Coord: {ycord}</p>
         <p>Is mouse down?: {isMouseDown ? "true" : "false"}</p>
         <p>Window width: {windowWidth}</p>
-        <div>
-          <svg width="200px" height="200px" overflow="visible">
-            <circle
-              onMouseDown={this.handleMouseDown}
-              onMouseMove={this.handleMouseMove}
-              onMouseUp={this.handleMouseUp}
-              strokeWidth="1rem"
-              fill="#9CA3AF"
-              stroke="#000000"
-              cx="100px"
-              cy="100px"
-              r="100px"
-            />
-            <circle
-              fill="#ffafaf"
-              cx="186.7px"
-              cy="50px"
-              r="10px"
-            />
-          </svg>
-        </div>
       </div>
     );
   }

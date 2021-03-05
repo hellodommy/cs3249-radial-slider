@@ -47,15 +47,14 @@ class Widget extends React.Component {
           spacing={3}
           justify="center"
           alignItems="center"
-          style={{ marginTop: "2rem" }}
         >
+          <Grid item xs={4} style={{ width: "100%", marginTop: "10px"}}>
+            <RadialSlider />
+          </Grid>
           <Grid item xs={4}>
             <p>Target temperature: {targetTemperature}°F</p>
             <p>Current temperature: {currTemperature}°F</p>
             <p>Mode: {mode}</p>
-          </Grid>
-          <Grid>
-            <RadialSlider />
           </Grid>
           <Grid item xs={4} style={{ width: "100%" }}>
             <LinearSlider

@@ -29,7 +29,6 @@ class Thermometer extends React.Component {
   render() {
     const currTemperature = this.props.currTemperature;
     const error = this.state.error;
-    console.log(error)
     return (
       <ClickAwayListener onClickAway={this.handleClickAway}>
         <FormControl>
