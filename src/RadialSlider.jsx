@@ -16,6 +16,8 @@ class RadialSlider extends React.Component {
     this.state = {
       windowWidth: window.innerWidth,
       windowHeight: window.innerHeight,
+      xknob: 186.7,
+      yknob: 50,
       xcord: 0,
       ycord: 0,
       isMouseDown: false,
@@ -43,9 +45,13 @@ class RadialSlider extends React.Component {
     if (this.state.isMouseDown) {
       const centreX = this.state.windowWidth / 2; // because circle is in horizontal centre of page
       const centreY = 110; // 10px margin and 100px radius
-      const distFromX = this.state.xcord - centreX;
-      const distFromY = this.state.ycord - centreY;
-      const radians = Math.atan2(distFromY, distFromX)
+      const distFromX = centreX - this.state.xcord;
+      const distFromY = centreY - this.state.ycord;
+      const radians = Math.atan2(distFromY, distFromX);
+      const tempX = Math.cos(radians) * 100;
+      const tempY = Math.sin(radians) * 100;
+      this.setState({xknob: 100 - tempX});
+      this.setState({yknob: 100 - tempY});
       console.log(radToDegree(radians))
     }
   }
@@ -61,12 +67,14 @@ class RadialSlider extends React.Component {
   render() {
     const xcord = this.state.xcord;
     const ycord = this.state.ycord;
+    const xknob = this.state.xknob;
+    const yknob = this.state.yknob;
     const isMouseDown = this.state.isMouseDown;
     const windowWidth = this.state.windowWidth;
 
     return (
       <div>
-        <svg width="200px" height="200px">
+        <svg width="200px" height="200px" overflow="visible">
           <circle
             onMouseMove={this.handleMouseMove}
             onMouseUp={this.handleMouseUp}
@@ -77,8 +85,8 @@ class RadialSlider extends React.Component {
           />
           <circle
             fill="#ffafaf"
-            cx="186.7px"
-            cy="50px"
+            cx={xknob}
+            cy={yknob}
             r="10px"
             onMouseDown={this.handleMouseDown}
             onMouseUp={this.handleMouseUp}
