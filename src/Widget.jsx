@@ -48,7 +48,7 @@ class Widget extends React.Component {
           justify="center"
           alignItems="center"
         >
-          <Grid item xs={4} style={{ width: "100%", marginTop: "10px"}}>
+          <Grid item xs={4} style={{ width: "100%", marginTop: "50px"}}>
             <RadialSlider />
           </Grid>
           <Grid item xs={4}>

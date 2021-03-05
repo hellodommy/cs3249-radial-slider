@@ -1,6 +1,9 @@
 import React from "react";
 
 function radToDegree(rad) {
+  /**
+   * For testing purposes
+   */
   return rad * 180 / Math.PI;
 }
 
@@ -21,6 +24,7 @@ class RadialSlider extends React.Component {
       xcord: 0,
       ycord: 0,
       isMouseDown: false,
+      targetTemp: 72
     };
   }
 
@@ -44,10 +48,28 @@ class RadialSlider extends React.Component {
     this.setState({ xcord: e.pageX, ycord: e.pageY });
     if (this.state.isMouseDown) {
       const centreX = this.state.windowWidth / 2; // because circle is in horizontal centre of page
-      const centreY = 110; // 10px margin and 100px radius
+      const centreY = 150; // 10px margin and 100px radius
       const distFromX = centreX - this.state.xcord;
       const distFromY = centreY - this.state.ycord;
       const radians = Math.atan2(distFromY, distFromX);
+      if (radians <= 180 && radians > -Math.PI / 2) {
+        const adjRad = radians + Math.PI / 2;
+        const tt = Math.floor(adjRad / (Math.PI / 15) + 50);
+        this.setState({ targetTemp: tt })
+      } else if (radians >=0 && radians < Math.PI / 2) {
+        const adjRad = radians + Math.PI / 2;
+        const tt = Math.floor(adjRad / (Math.PI / 15) + 50);
+        this.setState({ targetTemp: tt });
+      } else if (radians >= Math.PI / 2 && radians <= Math.PI) {
+        const adjRad = radians + Math.PI / 2;
+        const tt = Math.floor(adjRad / (Math.PI / 15) + 50);
+        this.setState({ targetTemp: tt });
+      } else {
+        const adjRad = radians + (2.5 * Math.PI);
+        const tt = Math.floor(adjRad / (Math.PI / 15) + 50);
+        this.setState({ targetTemp: tt });
+      }
+      // mathpi / 15 = 1 fahrenheit
       const tempX = Math.cos(radians) * 100;
       const tempY = Math.sin(radians) * 100;
       this.setState({xknob: 100 - tempX});
@@ -64,39 +86,36 @@ class RadialSlider extends React.Component {
     this.setState({ isMouseDown: false });
   }
 
+  // TODO: Fix starting point xknob and yknob error at 72F
   render() {
-    const xcord = this.state.xcord;
-    const ycord = this.state.ycord;
     const xknob = this.state.xknob;
     const yknob = this.state.yknob;
-    const isMouseDown = this.state.isMouseDown;
-    const windowWidth = this.state.windowWidth;
-
+    const targetTemp = this.state.targetTemp;
     return (
       <div>
         <svg width="200px" height="200px" overflow="visible">
           <circle
             onMouseMove={this.handleMouseMove}
             onMouseUp={this.handleMouseUp}
-            fill="#9CA3AF"
-            cx="100px"
-            cy="100px"
-            r="100px"
+            fill="#D1D5DB"
+            cx="100"
+            cy="100"
+            r="100"
           />
           <circle
-            fill="#ffafaf"
+            fill="#9CA3AF"
             cx={xknob}
             cy={yknob}
-            r="10px"
+            r="10"
             onMouseDown={this.handleMouseDown}
             onMouseUp={this.handleMouseUp}
             style={{ cursor: "pointer" }}
           />
+          <text x="100" y="100" text-anchor="middle" class="small">
+            My
+          </text>
         </svg>
-        <p>X-Coord: {xcord}</p>
-        <p>Y-Coord: {ycord}</p>
-        <p>Is mouse down?: {isMouseDown ? "true" : "false"}</p>
-        <p>Window width: {windowWidth}</p>
+        <p>{targetTemp}</p>
       </div>
     );
   }
