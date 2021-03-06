@@ -7,6 +7,14 @@ function radToDegree(rad) {
   return rad * 180 / Math.PI;
 }
 
+function degToRad(deg) {
+  return deg * Math.PI / 180;
+}
+
+function getKnobCoords(rad) {
+  return [100 - Math.cos(rad) * 100, 100 - Math.sin(rad) * 100];
+}
+
 class RadialSlider extends React.Component {
   constructor(props) {
     super(props);
@@ -18,9 +26,8 @@ class RadialSlider extends React.Component {
     this.updateWindowDimensions = this.updateWindowDimensions.bind(this);
     this.state = {
       windowWidth: window.innerWidth,
-      windowHeight: window.innerHeight,
-      xknob: 186.7,
-      yknob: 50,
+      xknob: 100 - Math.cos(degToRad(174)) * 100,
+      yknob: 100 - Math.sin(degToRad(174)) * 100,
       xcord: 0,
       ycord: 0,
       isMouseDown: false,
@@ -40,7 +47,6 @@ class RadialSlider extends React.Component {
   updateWindowDimensions() {
     this.setState({
       windowWidth: window.innerWidth,
-      windowHeight: window.innerHeight,
     });
   }
 
@@ -70,10 +76,8 @@ class RadialSlider extends React.Component {
         this.setState({ targetTemp: tt });
       }
       // mathpi / 15 = 1 fahrenheit
-      const tempX = Math.cos(radians) * 100;
-      const tempY = Math.sin(radians) * 100;
-      this.setState({xknob: 100 - tempX});
-      this.setState({yknob: 100 - tempY});
+      this.setState({ xknob: getKnobCoords(radians)[0] });
+      this.setState({ yknob: getKnobCoords(radians)[1] });
       console.log(radToDegree(radians))
     }
   }
