@@ -112,16 +112,25 @@ class RadialSliderView extends React.Component {
             fill="#9CA3AF"
             cx={xknob}
             cy={yknob}
+            r="16"
+            fillOpacity="0.2"
+          />
+          <circle
+            fill="#F9FAFB"
+            cx={xknob}
+            cy={yknob}
             r="10"
             onMouseDown={this.handleMouseDown}
             onMouseUp={this.handleMouseUp}
             style={{ cursor: "pointer" }}
           />
-          <text x="200" y="200" text-anchor="middle" class="small">
+          <text x="200" y="200" text-anchor="middle" fontSize="3rem">
             {targetTemperature}°F
           </text>
+          <text x="200" y="250" text-anchor="middle" fontSize="1rem">
+            Current: {currTemperature}°F
+          </text>
         </svg>
-        <p>Current: {currTemperature}</p>
         <p>Mode: {mode}</p>
       </div>
     );
