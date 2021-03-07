@@ -1,21 +1,16 @@
 import React from "react";
-
-function radToDegree(rad) {
-  /**
-   * For testing purposes
-   */
-  return rad * 180 / Math.PI;
-}
+import { calculateTargetTemp } from '../Model/RadialSlider.Model'
 
 function degToRad(deg) {
-  return deg * Math.PI / 180;
+  return (deg * Math.PI) / 180;
 }
 
-function getKnobCoords(rad) {
+function getKnobCoords(mouseCoords) {
+  const rad = Math.atan2(mouseCoords[1], mouseCoords[0]);
   return [100 - Math.cos(rad) * 100, 100 - Math.sin(rad) * 100];
 }
 
-class RadialSlider extends React.Component {
+class RadialSliderView extends React.Component {
   constructor(props) {
     super(props);
     this.handleMouseMove = this.handleMouseMove.bind(this);
@@ -44,6 +39,9 @@ class RadialSlider extends React.Component {
   }
 
   updateWindowDimensions() {
+    /**
+     * Recalculate coordinates of horizontal centre of circle when window is resized
+     */
     this.setState({
       windowWidth: window.innerWidth,
     });
@@ -56,28 +54,11 @@ class RadialSlider extends React.Component {
       const centreY = 150; // 10px margin and 100px radius
       const distFromX = centreX - this.state.xcord;
       const distFromY = centreY - this.state.ycord;
-      const radians = Math.atan2(distFromY, distFromX);
-      if (radians <= 180 && radians > -Math.PI / 2) {
-        const adjRad = radians + Math.PI / 2;
-        const tt = Math.floor(adjRad / (Math.PI / 15) + 50);
-        this.props.onTemperatureChange(tt);
-      } else if (radians >=0 && radians < Math.PI / 2) {
-        const adjRad = radians + Math.PI / 2;
-        const tt = Math.floor(adjRad / (Math.PI / 15) + 50);
-        this.props.onTemperatureChange(tt);
-      } else if (radians >= Math.PI / 2 && radians <= Math.PI) {
-        const adjRad = radians + Math.PI / 2;
-        const tt = Math.floor(adjRad / (Math.PI / 15) + 50);
-        this.props.onTemperatureChange(tt);
-      } else {
-        const adjRad = radians + (2.5 * Math.PI);
-        const tt = Math.floor(adjRad / (Math.PI / 15) + 50);
-        this.props.onTemperatureChange(tt);
-      }
+      const targetTemperature = calculateTargetTemp([distFromX, distFromY]);
+      this.props.onTemperatureChange(targetTemperature);
+      const knobCoords = getKnobCoords([distFromX, distFromY]);
       // mathpi / 15 = 1 fahrenheit
-      this.setState({ xknob: getKnobCoords(radians)[0] });
-      this.setState({ yknob: getKnobCoords(radians)[1] });
-      console.log(radToDegree(radians))
+      this.setState({ xknob: knobCoords[0], yknob: knobCoords[1] });
     }
   }
 
@@ -89,7 +70,6 @@ class RadialSlider extends React.Component {
     this.setState({ isMouseDown: false });
   }
 
-  // TODO: Fix starting point xknob and yknob error at 72F
   render() {
     const xknob = this.state.xknob;
     const yknob = this.state.yknob;
@@ -124,4 +104,4 @@ class RadialSlider extends React.Component {
   }
 }
 
-export default RadialSlider;
+export default RadialSliderView;

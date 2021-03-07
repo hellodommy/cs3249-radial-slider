@@ -1,24 +1,10 @@
 import React from "react";
-import Thermometer from "./Thermometer";
-import LinearSlider from "./LinearSlider";
 import Grid from "@material-ui/core/Grid";
-import RadialSlider from "./RadialSlider";
+import Thermometer from '../Thermometer';
+import RadialSliderView from './RadialSliderView';
+import { calculateMode } from "../Model/RadialSlider.Model";
 
-const dT = 2;
-const dTCool = 1.5;
-const dTHeat = 1.5;
-
-function getMode(currTemperature, targetTemperature) {
-  if (currTemperature < targetTemperature - dT - dTHeat) {
-    return "heating";
-  } else if (currTemperature > targetTemperature + dT + dTCool) {
-    return "cooling";
-  } else {
-    return "off";
-  }
-}
-
-class Widget extends React.Component {
+class WidgetView extends React.Component {
   constructor(props) {
     super(props);
     this.handleCurrTempChange = this.handleCurrTempChange.bind(this);
@@ -31,13 +17,13 @@ class Widget extends React.Component {
   }
 
   handleTargetTempChange(targetTemperature) {
-      this.setState({ targetTemperature });
+    this.setState({ targetTemperature });
   }
 
   render() {
     const currTemperature = this.state.currTemperature;
     const targetTemperature = this.state.targetTemperature;
-    const mode = getMode(currTemperature, targetTemperature);
+    const mode = calculateMode([currTemperature, targetTemperature]);
 
     return (
       <div>
@@ -49,9 +35,10 @@ class Widget extends React.Component {
           alignItems="center"
         >
           <Grid item xs={4} style={{ width: "100%", marginTop: "50px" }}>
-            <RadialSlider
+            <RadialSliderView
               onTemperatureChange={this.handleTargetTempChange}
               targetTemperature={targetTemperature}
+              currTemperature={currTemperature}
             />
           </Grid>
           <Grid item xs={4}>
@@ -70,4 +57,4 @@ class Widget extends React.Component {
   }
 }
 
-export default Widget;
+export default WidgetView;

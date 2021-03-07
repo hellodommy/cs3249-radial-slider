@@ -1,10 +1,10 @@
 import './App.css';
-import Widget from './Widget.jsx'
+import WidgetView from "./View/WidgetView.jsx";
 
 function App() {
   return (
     <div className="App">
-      <Widget />
+      <WidgetView />
     </div>
   );
 }
