@@ -1,13 +1,34 @@
 import React from "react";
-import { calculateTargetTemp } from '../Model/RadialSlider.Model'
+import { calculateMode, calculateTargetTemp } from '../Model/RadialSlider.Model'
 
 function degToRad(deg) {
+  /**
+   * Helper function to convert degree to radians
+   */
   return (deg * Math.PI) / 180;
 }
 
 function getKnobCoords(mouseCoords) {
+  /**
+   * Calculates where the knob should be based on mouse coordinates
+   */
   const rad = Math.atan2(mouseCoords[1], mouseCoords[0]);
-  return [100 - Math.cos(rad) * 100, 100 - Math.sin(rad) * 100];
+  return [200 - Math.cos(rad) * 200, 200 - Math.sin(rad) * 200];
+}
+
+function getColour(mode) {
+  /**
+   * Determines the colour of radial slider depending on thermostat mode
+   */
+  if (mode === "off") {
+    return "#E5E7EB";
+  } else if (mode === "cooling") {
+    return "#BFDBFE";
+  } else if (mode === "heating") {
+    return "#FECACA";
+  } else {
+    throw "Unknown mode"
+  }
 }
 
 class RadialSliderView extends React.Component {
@@ -21,8 +42,8 @@ class RadialSliderView extends React.Component {
     this.updateWindowDimensions = this.updateWindowDimensions.bind(this);
     this.state = {
       windowWidth: window.innerWidth,
-      xknob: 100 - Math.cos(degToRad(174)) * 100,
-      yknob: 100 - Math.sin(degToRad(174)) * 100,
+      xknob: 200 - Math.cos(degToRad(174)) * 200,
+      yknob: 200 - Math.sin(degToRad(174)) * 200,
       xcord: 0,
       ycord: 0,
       isMouseDown: false,
@@ -50,14 +71,13 @@ class RadialSliderView extends React.Component {
   handleMouseMove(e) {
     this.setState({ xcord: e.pageX, ycord: e.pageY });
     if (this.state.isMouseDown) {
-      const centreX = this.state.windowWidth / 2; // because circle is in horizontal centre of page
-      const centreY = 150; // 10px margin and 100px radius
+      const centreX = this.state.windowWidth / 2; // circle is in horizontal centre of page
+      const centreY = 250; // 50px margin and 200px radius
       const distFromX = centreX - this.state.xcord;
       const distFromY = centreY - this.state.ycord;
       const targetTemperature = calculateTargetTemp([distFromX, distFromY]);
       this.props.onTemperatureChange(targetTemperature);
       const knobCoords = getKnobCoords([distFromX, distFromY]);
-      // mathpi / 15 = 1 fahrenheit
       this.setState({ xknob: knobCoords[0], yknob: knobCoords[1] });
     }
   }
@@ -73,18 +93,20 @@ class RadialSliderView extends React.Component {
   render() {
     const xknob = this.state.xknob;
     const yknob = this.state.yknob;
-    const targetTemperature = this.props.targetTemperature;
+    const { currTemperature, targetTemperature } = this.props;
+    const mode = calculateMode([currTemperature, targetTemperature]);
+    const colour = getColour(mode)
 
     return (
       <div>
-        <svg width="200px" height="200px" overflow="visible">
+        <svg width="400px" height="400px" overflow="visible">
           <circle
             onMouseMove={this.handleMouseMove}
             onMouseUp={this.handleMouseUp}
-            fill="#D1D5DB"
-            cx="100"
-            cy="100"
-            r="100"
+            fill={colour}
+            cx="200"
+            cy="200"
+            r="200"
           />
           <circle
             fill="#9CA3AF"
@@ -95,10 +117,12 @@ class RadialSliderView extends React.Component {
             onMouseUp={this.handleMouseUp}
             style={{ cursor: "pointer" }}
           />
-          <text x="100" y="100" text-anchor="middle" class="small">
+          <text x="200" y="200" text-anchor="middle" class="small">
             {targetTemperature}°F
           </text>
         </svg>
+        <p>Current: {currTemperature}</p>
+        <p>Mode: {mode}</p>
       </div>
     );
   }
