@@ -31,7 +31,6 @@ class RadialSlider extends React.Component {
       xcord: 0,
       ycord: 0,
       isMouseDown: false,
-      targetTemp: 72
     };
   }
 
@@ -61,19 +60,19 @@ class RadialSlider extends React.Component {
       if (radians <= 180 && radians > -Math.PI / 2) {
         const adjRad = radians + Math.PI / 2;
         const tt = Math.floor(adjRad / (Math.PI / 15) + 50);
-        this.setState({ targetTemp: tt })
+        this.props.onTemperatureChange(tt);
       } else if (radians >=0 && radians < Math.PI / 2) {
         const adjRad = radians + Math.PI / 2;
         const tt = Math.floor(adjRad / (Math.PI / 15) + 50);
-        this.setState({ targetTemp: tt });
+        this.props.onTemperatureChange(tt);
       } else if (radians >= Math.PI / 2 && radians <= Math.PI) {
         const adjRad = radians + Math.PI / 2;
         const tt = Math.floor(adjRad / (Math.PI / 15) + 50);
-        this.setState({ targetTemp: tt });
+        this.props.onTemperatureChange(tt);
       } else {
         const adjRad = radians + (2.5 * Math.PI);
         const tt = Math.floor(adjRad / (Math.PI / 15) + 50);
-        this.setState({ targetTemp: tt });
+        this.props.onTemperatureChange(tt);
       }
       // mathpi / 15 = 1 fahrenheit
       this.setState({ xknob: getKnobCoords(radians)[0] });
@@ -94,7 +93,8 @@ class RadialSlider extends React.Component {
   render() {
     const xknob = this.state.xknob;
     const yknob = this.state.yknob;
-    const targetTemp = this.state.targetTemp;
+    const targetTemperature = this.props.targetTemperature;
+
     return (
       <div>
         <svg width="200px" height="200px" overflow="visible">
@@ -119,7 +119,7 @@ class RadialSlider extends React.Component {
             My
           </text>
         </svg>
-        <p>{targetTemp}</p>
+        <p>{targetTemperature}</p>
       </div>
     );
   }

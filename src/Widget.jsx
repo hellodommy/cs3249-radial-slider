@@ -49,18 +49,12 @@ class Widget extends React.Component {
           alignItems="center"
         >
           <Grid item xs={4} style={{ width: "100%", marginTop: "50px"}}>
-            <RadialSlider />
+            <RadialSlider onTemperatureChange={this.handleTargetTempChange}/>
           </Grid>
           <Grid item xs={4}>
             <p>Target temperature: {targetTemperature}°F</p>
             <p>Current temperature: {currTemperature}°F</p>
             <p>Mode: {mode}</p>
-          </Grid>
-          <Grid item xs={4} style={{ width: "100%" }}>
-            <LinearSlider
-              targetTemperature={targetTemperature}
-              onTemperatureChange={this.handleTargetTempChange}
-            />
           </Grid>
           <Grid item xs={12}>
             <Thermometer
