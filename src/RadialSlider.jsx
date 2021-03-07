@@ -116,10 +116,9 @@ class RadialSlider extends React.Component {
             style={{ cursor: "pointer" }}
           />
           <text x="100" y="100" text-anchor="middle" class="small">
-            My
+            {targetTemperature}°F
           </text>
         </svg>
-        <p>{targetTemperature}</p>
       </div>
     );
   }
