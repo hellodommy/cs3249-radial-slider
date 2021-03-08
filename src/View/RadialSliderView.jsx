@@ -1,7 +1,7 @@
 import React from "react";
 import { Machine, interpret } from "xstate";
 
-import { calculateMode, calculateTargetTemp } from '../Model/RadialSlider.Model'
+import { calculateTargetTemp } from '../Model/RadialSlider.Model'
 import thermostatMachine from "../ThermostatMachine";
 
 function degToRad(deg) {
@@ -19,29 +19,12 @@ function getKnobCoords(mouseCoords) {
   return [200 - Math.cos(rad) * 200, 200 - Math.sin(rad) * 200];
 }
 
-function getColour(mode) {
-  /**
-   * Determines the colour of radial slider depending on thermostat mode
-   */
-  if (mode === "off") {
-    return "#E5E7EB";
-  } else if (mode === "cooling") {
-    return "#BFDBFE";
-  } else if (mode === "heating") {
-    return "#FECACA";
-  } else {
-    throw "Unknown mode"
-  }
-}
-
 class RadialSliderView extends React.Component {
-  state = {
-    current: thermostatMachine.initialState,
-  };
 
   service = interpret(thermostatMachine).onTransition((current) =>
     this.setState({ current })
   );
+  
   constructor(props) {
     super(props);
     this.handleMouseMove = this.handleMouseMove.bind(this);
@@ -57,6 +40,7 @@ class RadialSliderView extends React.Component {
       xcord: 0,
       ycord: 0,
       isMouseDown: false,
+      current: thermostatMachine.initialState,
     };
   }
 
@@ -107,12 +91,12 @@ class RadialSliderView extends React.Component {
   }
 
   render() {
+    const targetTemperature = this.state.current.context.targetTemp;
+    const mode = this.state.current.value;
+    const colour = this.state.current.context.colour;
     const xknob = this.state.xknob;
     const yknob = this.state.yknob;
-    const { currTemperature, targetTemperature } = this.props;
-    const mode = calculateMode([currTemperature, targetTemperature]);
-    const colour = getColour(mode);
-
+    const { currTemperature } = this.props;
     return (
       <div>
         <svg width="400px" height="400px" overflow="visible">

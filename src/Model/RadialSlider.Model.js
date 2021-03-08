@@ -19,21 +19,3 @@ export function calculateTargetTemp(coords) {
   const targetTemperature = Math.floor(adjRad / (Math.PI / 15) + 50); // mathpi / 15 = 1 fahrenheit
   return targetTemperature;
 }
-
-export function calculateMode(temp) {
-  /**
-   * Determines the mode of the thermostat depending on the current and target temperature
-   */
-	const currTemp = temp[0];
-	const targetTemp = temp[1];
-	const dT = 2;
-	const dTCool = 1.5;
-	const dTHeat = 1.5;
-	if (currTemp < targetTemp - dT - dTHeat) {
-    return "heating";
-  } else if (currTemp > targetTemp + dT + dTCool) {
-    return "cooling";
-  } else {
-    return "off";
-  }
-}
