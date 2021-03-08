@@ -1,5 +1,8 @@
 import React from "react";
+import { Machine, interpret } from "xstate";
+
 import { calculateMode, calculateTargetTemp } from '../Model/RadialSlider.Model'
+import thermostatMachine from "../ThermostatMachine";
 
 function degToRad(deg) {
   /**
@@ -32,6 +35,13 @@ function getColour(mode) {
 }
 
 class RadialSliderView extends React.Component {
+  state = {
+    current: thermostatMachine.initialState,
+  };
+
+  service = interpret(thermostatMachine).onTransition((current) =>
+    this.setState({ current })
+  );
   constructor(props) {
     super(props);
     this.handleMouseMove = this.handleMouseMove.bind(this);
@@ -51,11 +61,13 @@ class RadialSliderView extends React.Component {
   }
 
   componentDidMount() {
+    this.service.start();   
     this.updateWindowDimensions();
     window.addEventListener("resize", this.updateWindowDimensions);
   }
 
   componentWillUnmount() {
+    this.service.stop();
     window.removeEventListener("resize", this.updateWindowDimensions);
   }
 
@@ -79,6 +91,10 @@ class RadialSliderView extends React.Component {
       this.props.onTemperatureChange(targetTemperature);
       const knobCoords = getKnobCoords([distFromX, distFromY]);
       this.setState({ xknob: knobCoords[0], yknob: knobCoords[1] });
+      this.service.send({
+        type: "TARGET_TEMP_CHANGE",
+        targetTemp: targetTemperature,
+      });
     }
   }
 
@@ -95,7 +111,7 @@ class RadialSliderView extends React.Component {
     const yknob = this.state.yknob;
     const { currTemperature, targetTemperature } = this.props;
     const mode = calculateMode([currTemperature, targetTemperature]);
-    const colour = getColour(mode)
+    const colour = getColour(mode);
 
     return (
       <div>

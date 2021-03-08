@@ -8,18 +8,17 @@
 // - raise
 // - actions
 // - XState (all XState exports)
-
-import { assign } from "xstate/lib/actionTypes";
-
-const updateTargetTemp = assign({
-  targetTemp: (context, event) => event.targetTemp
-})
+import { Machine, assign } from "xstate";
 
 const updateCurrentTemp = assign({
   currTemp: (context, event) => event.currTemp
-})
+});
 
-export const thermostatMachine = Machine(
+const updateTargetTemp = assign({
+  targetTemp: (context, event) => event.targetTemp,
+});
+
+const thermostatMachine = Machine(
   {
     id: "thermostat",
     initial: "off",
@@ -102,5 +101,7 @@ export const thermostatMachine = Machine(
         );
       },
     },
-  }
+  },
 );
+
+export default thermostatMachine;
