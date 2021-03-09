@@ -1,22 +1,22 @@
 {
   "files": {
     "main.css": "/cs3249-radial-slider/static/css/main.8c8b27cf.chunk.css",
-    "main.js": "/cs3249-radial-slider/static/js/main.2c40de01.chunk.js",
-    "main.js.map": "/cs3249-radial-slider/static/js/main.2c40de01.chunk.js.map",
+    "main.js": "/cs3249-radial-slider/static/js/main.4a6684ee.chunk.js",
+    "main.js.map": "/cs3249-radial-slider/static/js/main.4a6684ee.chunk.js.map",
     "runtime-main.js": "/cs3249-radial-slider/static/js/runtime-main.fb590688.js",
     "runtime-main.js.map": "/cs3249-radial-slider/static/js/runtime-main.fb590688.js.map",
-    "static/js/2.9ecfffdb.chunk.js": "/cs3249-radial-slider/static/js/2.9ecfffdb.chunk.js",
-    "static/js/2.9ecfffdb.chunk.js.map": "/cs3249-radial-slider/static/js/2.9ecfffdb.chunk.js.map",
+    "static/js/2.84472c26.chunk.js": "/cs3249-radial-slider/static/js/2.84472c26.chunk.js",
+    "static/js/2.84472c26.chunk.js.map": "/cs3249-radial-slider/static/js/2.84472c26.chunk.js.map",
     "static/js/3.f8719c6b.chunk.js": "/cs3249-radial-slider/static/js/3.f8719c6b.chunk.js",
     "static/js/3.f8719c6b.chunk.js.map": "/cs3249-radial-slider/static/js/3.f8719c6b.chunk.js.map",
     "index.html": "/cs3249-radial-slider/index.html",
     "static/css/main.8c8b27cf.chunk.css.map": "/cs3249-radial-slider/static/css/main.8c8b27cf.chunk.css.map",
-    "static/js/2.9ecfffdb.chunk.js.LICENSE.txt": "/cs3249-radial-slider/static/js/2.9ecfffdb.chunk.js.LICENSE.txt"
+    "static/js/2.84472c26.chunk.js.LICENSE.txt": "/cs3249-radial-slider/static/js/2.84472c26.chunk.js.LICENSE.txt"
   },
   "entrypoints": [
     "static/js/runtime-main.fb590688.js",
-    "static/js/2.9ecfffdb.chunk.js",
+    "static/js/2.84472c26.chunk.js",
     "static/css/main.8c8b27cf.chunk.css",
-    "static/js/main.2c40de01.chunk.js"
+    "static/js/main.4a6684ee.chunk.js"
   ]
 }
