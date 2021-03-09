@@ -1,21 +1,27 @@
 import React from "react";
 import { Machine, interpret } from "xstate";
 
-import { calculateTargetTemp, degToRad, radToDeg, multiple } from '../Model/RadialSliderModel'
+import { calculateTargetTemp, getAngle, degToRad, multiple } from '../Model/RadialSliderModel'
 import thermostatMachine from "../ThermostatMachine";
 import Thermometer from "../Thermometer";
 
-function getKnobCoords(mouseCoords) {
+/**
+ * Radial Slider View-Model Component
+ */
+function getKnobCoords(deg) {
   /**
-   * Calculates where the knob should be based on mouse coordinates
+   * Calculates where the knob should be based on angle
    */
-  const rad = Math.atan2(mouseCoords[1], mouseCoords[0]);
+  const rad = degToRad(deg);
   return [200 - Math.cos(rad) * 200, 200 - Math.sin(rad) * 200];
 }
 
 const xknobStart = 200 - Math.cos(degToRad((72 - 50) * multiple - 45)) * 200;
 const yknobStart = 200 - Math.sin(degToRad((72 - 50) * multiple - 45)) * 200;
 
+/**
+ * Radial Slider View Component
+ */
 class RadialSliderView extends React.Component {
   constructor(props) {
     super(props);
@@ -23,6 +29,8 @@ class RadialSliderView extends React.Component {
     this.handleMouseDown = this.handleMouseDown.bind(this);
     this.handleMouseUp = this.handleMouseUp.bind(this);
     this.handleCurrTempChange = this.handleCurrTempChange.bind(this);
+    this.updateTarget = this.updateTarget.bind(this);
+    this.rotationDrag = this.rotationDrag.bind(this);
     this.componentDidMount = this.componentDidMount.bind(this);
     this.componentWillUnmount = this.componentWillUnmount.bind(this);
     this.updateWindowDimensions = this.updateWindowDimensions.bind(this);
@@ -30,8 +38,6 @@ class RadialSliderView extends React.Component {
       windowWidth: window.innerWidth,
       xknob: xknobStart,
       yknob: yknobStart,
-      xcord: 0,
-      ycord: 0,
       isMouseDown: false,
       current: thermostatMachine.initialState,
     };
@@ -44,11 +50,14 @@ class RadialSliderView extends React.Component {
   componentDidMount() {
     this.service.start();
     this.updateWindowDimensions();
+    window.addEventListener("updateTarget", this.updateTarget);
+    window.addEventListener("rotationDrag", this.rotationDrag);
     window.addEventListener("resize", this.updateWindowDimensions);
   }
 
   componentWillUnmount() {
     this.service.stop();
+    window.removeEventListener("updateTarget", this.updateTarget);
     window.removeEventListener("resize", this.updateWindowDimensions);
   }
 
@@ -61,31 +70,57 @@ class RadialSliderView extends React.Component {
     });
   }
 
+  updateTarget(e) {
+    /**
+     * Update target temperature in state machine
+     */
+    this.service.send({
+      type: "TARGET_TEMP_CHANGE",
+      targetTemp: e.detail.targetTemp,
+    });
+  }
+
   handleCurrTempChange(currTemperature) {
+    /**
+     * Update current temperature in state machine
+     */
     this.service.send({
       type: "CURR_TEMP_CHANGE",
       currTemp: currTemperature,
     });
   }
 
-  handleMouseMove(e) {
-    this.setState({ xcord: e.pageX, ycord: e.pageY });
-    if (this.state.isMouseDown) {
-      const centreX = this.state.windowWidth / 2; // circle is in horizontal centre of page
-      const centreY = 250; // 50px margin and 200px radius
-      const distFromX = centreX - this.state.xcord;
-      const distFromY = centreY - this.state.ycord;
-      const rad = Math.atan2(distFromY, distFromX);
-      const deg = radToDeg(rad);
-      if (deg >= -45 || deg <= -135) {
-        const targetTemperature = calculateTargetTemp([distFromX, distFromY]);
-        const knobCoords = getKnobCoords([distFromX, distFromY]);
-        this.setState({ xknob: knobCoords[0], yknob: knobCoords[1] });
-        this.service.send({
-          type: "TARGET_TEMP_CHANGE",
-          targetTemp: targetTemperature,
+  rotationDrag(e) {
+    const deg = getAngle(
+      this.state.windowWidth,
+      e.detail.mouseX,
+      e.detail.mouseY
+    );
+    if (deg >= -45 || deg <= -135) { // if angle is in valid zone
+      const knobCoords = getKnobCoords(deg);
+      this.setState({ xknob: knobCoords[0], yknob: knobCoords[1] });
+
+      const newTargetTemp = calculateTargetTemp(deg);
+      if (newTargetTemp !== this.state.current.context.targetTemp) {
+        var updateTarget = new CustomEvent("updateTarget", {
+          detail: {
+            targetTemp: newTargetTemp,
+          },
         });
+        window.dispatchEvent(updateTarget);
       }
+    }
+  }
+
+  handleMouseMove(e) {
+    if (this.state.isMouseDown) {
+      var rotationDrag = new CustomEvent("rotationDrag", {
+        detail: {
+          mouseX: e.pageX,
+          mouseY: e.pageY,
+        }
+      });
+      window.dispatchEvent(rotationDrag);
     }
   }
 

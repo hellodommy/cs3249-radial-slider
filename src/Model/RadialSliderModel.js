@@ -1,15 +1,24 @@
 export const multiple = 270 / 31; // angle range of each fahrenheit
 
-export function calculateTargetTemp(coords) {
+export function calculateTargetTemp(deg) {
   /**
-   * Determines the target temperature depending on the mouse coordinates
+   * Determines the target temperature depending on the angle
    */
-  const distFromX = coords[0];
-  const distFromY = coords[1];
-  const rad = Math.atan2(distFromY, distFromX);
-  const normaliseDeg = radToDeg(normaliseRad(rad));
-  const targetTemperature = Math.floor(normaliseDeg / multiple) + 50;
+  const normalisedDeg = normaliseDeg(deg)
+  const targetTemperature = Math.floor(normalisedDeg / multiple) + 50;
   return targetTemperature;
+}
+
+export function getAngle(windowWidth, mouseX, mouseY) {
+  /**
+   * Get angle of rotation
+   */
+  const centreX = windowWidth / 2; // circle is in horizontal centre of page
+  const centreY = 250; // 50px margin and 200px radius
+  const distFromX = centreX - mouseX;
+  const distFromY = centreY - mouseY;
+  const deg = radToDeg(Math.atan2(distFromY, distFromX));
+  return deg;
 }
 
 export function degToRad(deg) {
@@ -26,13 +35,13 @@ export function radToDeg(rad) {
   return (rad * 180) / Math.PI;
 }
 
-function normaliseRad(rad) {
+function normaliseDeg(deg) {
   /**
    * Adjusts the angle to relative axis starting at -45deg
    */
-  if (rad >= -Math.PI / 4 && rad <= Math.PI) {
-    return rad + Math.PI / 4;
+  if (deg >= -45 && deg <= 180) {
+    return deg + 45;
   } else {
-    return rad + 2.25 * Math.PI;
+    return deg + 405;
   }
 }
