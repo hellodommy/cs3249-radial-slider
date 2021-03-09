@@ -18,18 +18,6 @@ const updateTargetTemp = assign({
   targetTemp: (context, event) => event.targetTemp,
 });
 
-const colourGrey = assign({
-  colour: (context, event) => "#E5E7EB",
-});
-
-const colourBlue = assign({
-  colour: (context, event) => "#BFDBFE",
-});
-
-const colourRed = assign({
-  colour: (context, event) => "#FECACA",
-});
-
 const thermostatMachine = Machine(
   {
     id: "thermostat",
@@ -83,9 +71,9 @@ const thermostatMachine = Machine(
       tempCheck: {
         on: {
           "": [
-            { target: "off", cond: "isNormal", actions: [colourGrey] },
-            { target: "cooling", cond: "isHot", actions: [colourBlue] },
-            { target: "heating", cond: "isCold", actions: [colourRed] },
+            { target: "off", cond: "isNormal" },
+            { target: "cooling", cond: "isHot" },
+            { target: "heating", cond: "isCold" },
           ],
         },
       },

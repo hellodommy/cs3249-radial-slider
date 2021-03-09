@@ -16,12 +16,25 @@ function getKnobCoords(deg) {
   return [200 - Math.cos(rad) * 200, 200 - Math.sin(rad) * 200];
 }
 
+function getColour(mode) {
+  /**
+   * Determines colour of radial slider depending on mode
+   */
+  switch (mode) {
+    case "off":
+      return "#E5E7EB";
+    case "cooling":
+      return "#BFDBFE";
+    case "heating":
+      return "#FECACA";
+    default:
+      throw "Unkown mode"
+  }
+}
+
 const xknobStart = 200 - Math.cos(degToRad((72 - 50) * multiple - 45)) * 200;
 const yknobStart = 200 - Math.sin(degToRad((72 - 50) * multiple - 45)) * 200;
 
-/**
- * Radial Slider View Component
- */
 class RadialSliderView extends React.Component {
   constructor(props) {
     super(props);
@@ -58,6 +71,7 @@ class RadialSliderView extends React.Component {
   componentWillUnmount() {
     this.service.stop();
     window.removeEventListener("updateTarget", this.updateTarget);
+    window.removeEventListener("rotationDrag", this.rotationDrag);
     window.removeEventListener("resize", this.updateWindowDimensions);
   }
 
@@ -139,13 +153,17 @@ class RadialSliderView extends React.Component {
     const currTemperature = this.state.current.context.currTemp;
     const targetTemperature = this.state.current.context.targetTemp;
     const mode = this.state.current.value;
-    const colour = this.state.current.context.colour;
+    const colour = getColour(mode);
 
     /**
      * Values taken from React State
      */
     const xknob = this.state.xknob;
     const yknob = this.state.yknob;
+
+    /**
+     * Radial Slider View Component
+     */
     return (
       <div>
         <svg width="400px" height="400px" overflow="visible">
