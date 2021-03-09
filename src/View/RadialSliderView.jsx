@@ -3,6 +3,7 @@ import { Machine, interpret } from "xstate";
 
 import { calculateTargetTemp } from '../Model/RadialSlider.Model'
 import thermostatMachine from "../ThermostatMachine";
+import Thermometer from "../Thermometer";
 
 function degToRad(deg) {
   /**
@@ -19,24 +20,23 @@ function getKnobCoords(mouseCoords) {
   return [200 - Math.cos(rad) * 200, 200 - Math.sin(rad) * 200];
 }
 
-class RadialSliderView extends React.Component {
+const xknobStart = 200 - Math.cos(degToRad(174)) * 200;
+const yknobStart = 200 - Math.sin(degToRad(174)) * 200;
 
-  service = interpret(thermostatMachine).onTransition((current) =>
-    this.setState({ current })
-  );
-  
+class RadialSliderView extends React.Component {
   constructor(props) {
     super(props);
     this.handleMouseMove = this.handleMouseMove.bind(this);
     this.handleMouseDown = this.handleMouseDown.bind(this);
     this.handleMouseUp = this.handleMouseUp.bind(this);
+    this.handleCurrTempChange = this.handleCurrTempChange.bind(this);
     this.componentDidMount = this.componentDidMount.bind(this);
     this.componentWillUnmount = this.componentWillUnmount.bind(this);
     this.updateWindowDimensions = this.updateWindowDimensions.bind(this);
     this.state = {
       windowWidth: window.innerWidth,
-      xknob: 200 - Math.cos(degToRad(174)) * 200,
-      yknob: 200 - Math.sin(degToRad(174)) * 200,
+      xknob: xknobStart,
+      yknob: yknobStart,
       xcord: 0,
       ycord: 0,
       isMouseDown: false,
@@ -44,8 +44,12 @@ class RadialSliderView extends React.Component {
     };
   }
 
+  service = interpret(thermostatMachine).onTransition((current) =>
+    this.setState({ current })
+  );
+
   componentDidMount() {
-    this.service.start();   
+    this.service.start();
     this.updateWindowDimensions();
     window.addEventListener("resize", this.updateWindowDimensions);
   }
@@ -64,6 +68,13 @@ class RadialSliderView extends React.Component {
     });
   }
 
+  handleCurrTempChange(currTemperature) {
+    this.service.send({
+      type: "CURR_TEMP_CHANGE",
+      currTemp: currTemperature,
+    });
+  }
+
   handleMouseMove(e) {
     this.setState({ xcord: e.pageX, ycord: e.pageY });
     if (this.state.isMouseDown) {
@@ -72,7 +83,6 @@ class RadialSliderView extends React.Component {
       const distFromX = centreX - this.state.xcord;
       const distFromY = centreY - this.state.ycord;
       const targetTemperature = calculateTargetTemp([distFromX, distFromY]);
-      this.props.onTemperatureChange(targetTemperature);
       const knobCoords = getKnobCoords([distFromX, distFromY]);
       this.setState({ xknob: knobCoords[0], yknob: knobCoords[1] });
       this.service.send({
@@ -91,16 +101,17 @@ class RadialSliderView extends React.Component {
   }
 
   render() {
+    const currTemperature = this.state.current.context.currTemp;
     const targetTemperature = this.state.current.context.targetTemp;
     const mode = this.state.current.value;
     const colour = this.state.current.context.colour;
     const xknob = this.state.xknob;
     const yknob = this.state.yknob;
-    const { currTemperature } = this.props;
     return (
       <div>
         <svg width="400px" height="400px" overflow="visible">
           <circle
+            id="slider-body"
             onMouseMove={this.handleMouseMove}
             onMouseUp={this.handleMouseUp}
             fill={colour}
@@ -109,6 +120,7 @@ class RadialSliderView extends React.Component {
             r="200"
           />
           <circle
+            id="knob-shadow"
             fill="#9CA3AF"
             cx={xknob}
             cy={yknob}
@@ -116,6 +128,7 @@ class RadialSliderView extends React.Component {
             fillOpacity="0.2"
           />
           <circle
+            id="knob"
             fill="#F9FAFB"
             cx={xknob}
             cy={yknob}
@@ -132,6 +145,12 @@ class RadialSliderView extends React.Component {
           </text>
         </svg>
         <p>Mode: {mode}</p>
+
+        <Thermometer
+          currTemperature={currTemperature}
+          onTemperatureChange={this.handleCurrTempChange}
+        />
+        
       </div>
     );
   }
