@@ -1,10 +1,7 @@
 import React from "react";
 import RadialSliderView from './RadialSliderView';
 
-class WidgetView extends React.Component {
-  constructor(props) {
-    super(props);
-  }
+class MainPanelView extends React.Component {
 
   render() {
     return (
@@ -15,4 +12,4 @@ class WidgetView extends React.Component {
   }
 }
 
-export default WidgetView;
+export default MainPanelView;

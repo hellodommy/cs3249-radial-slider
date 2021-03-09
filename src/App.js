@@ -1,10 +1,10 @@
 import './App.css';
-import WidgetView from "./View/WidgetView.jsx";
+import MainPanelView from "./View/MainPanelView.jsx";
 
 function App() {
   return (
     <div className="App">
-      <WidgetView />
+      <MainPanelView />
     </div>
   );
 }

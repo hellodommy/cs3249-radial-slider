@@ -28,7 +28,6 @@ const thermostatMachine = Machine(
       dT: 2,
       dTCool: 1.5,
       dTHeat: 1.5,
-      colour: "#E5E7EB",
     },
     states: {
       off: {

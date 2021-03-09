@@ -1,13 +1,24 @@
 import React from "react";
 import { Machine, interpret } from "xstate";
 
-import { calculateTargetTemp, getAngle, degToRad, multiple } from '../Model/RadialSliderModel'
 import thermostatMachine from "../ThermostatMachine";
 import Thermometer from "../Thermometer";
 
 /**
  * Radial Slider View-Model Component
  */
+function getAngle(windowWidth, mouseX, mouseY) {
+  /**
+   * Get angle of rotation
+   */
+  const centreX = windowWidth / 2; // circle is in horizontal centre of page
+  const centreY = 250; // 50px margin and 200px radius
+  const distFromX = centreX - mouseX;
+  const distFromY = centreY - mouseY;
+  const deg = radToDeg(Math.atan2(distFromY, distFromX));
+  return deg;
+}
+
 function getKnobCoords(deg) {
   /**
    * Calculates where the knob should be based on angle
@@ -28,7 +39,43 @@ function getColour(mode) {
     case "heating":
       return "#FECACA";
     default:
-      throw "Unkown mode"
+      throw new Error("Unkown mode");
+  }
+}
+
+const multiple = 270 / 31; // angle range of each fahrenheit
+
+function calculateTargetTemp(deg) {
+  /**
+   * Determines the target temperature depending on the angle
+   */
+  const normalisedDeg = normaliseDeg(deg);
+  const targetTemperature = Math.floor(normalisedDeg / multiple) + 50;
+  return targetTemperature;
+}
+
+function degToRad(deg) {
+  /**
+   * Helper function to convert degree to radians
+   */
+  return (deg * Math.PI) / 180;
+}
+
+function radToDeg(rad) {
+  /**
+   * Helper function to convert radians to degree
+   */
+  return (rad * 180) / Math.PI;
+}
+
+function normaliseDeg(deg) {
+  /**
+   * Adjusts the angle to relative axis starting at -45deg
+   */
+  if (deg >= -45 && deg <= 180) {
+    return deg + 45;
+  } else {
+    return deg + 405;
   }
 }
 
@@ -43,7 +90,7 @@ class RadialSliderView extends React.Component {
     this.handleMouseUp = this.handleMouseUp.bind(this);
     this.handleCurrTempChange = this.handleCurrTempChange.bind(this);
     this.updateTarget = this.updateTarget.bind(this);
-    this.rotationDrag = this.rotationDrag.bind(this);
+    this.handleRotationDrag = this.handleRotationDrag.bind(this);
     this.componentDidMount = this.componentDidMount.bind(this);
     this.componentWillUnmount = this.componentWillUnmount.bind(this);
     this.updateWindowDimensions = this.updateWindowDimensions.bind(this);
@@ -64,14 +111,14 @@ class RadialSliderView extends React.Component {
     this.service.start();
     this.updateWindowDimensions();
     window.addEventListener("updateTarget", this.updateTarget);
-    window.addEventListener("rotationDrag", this.rotationDrag);
+    window.addEventListener("rotationDrag", this.handleRotationDrag);
     window.addEventListener("resize", this.updateWindowDimensions);
   }
 
   componentWillUnmount() {
     this.service.stop();
     window.removeEventListener("updateTarget", this.updateTarget);
-    window.removeEventListener("rotationDrag", this.rotationDrag);
+    window.removeEventListener("rotationDrag", this.handleRotationDrag);
     window.removeEventListener("resize", this.updateWindowDimensions);
   }
 
@@ -104,13 +151,14 @@ class RadialSliderView extends React.Component {
     });
   }
 
-  rotationDrag(e) {
+  handleRotationDrag(e) {
     const deg = getAngle(
       this.state.windowWidth,
       e.detail.mouseX,
       e.detail.mouseY
     );
-    if (deg >= -45 || deg <= -135) { // if angle is in valid zone
+    if (deg >= -45 || deg <= -135) {
+      // if angle is in valid zone
       const knobCoords = getKnobCoords(deg);
       this.setState({ xknob: knobCoords[0], yknob: knobCoords[1] });
 
@@ -132,7 +180,7 @@ class RadialSliderView extends React.Component {
         detail: {
           mouseX: e.pageX,
           mouseY: e.pageY,
-        }
+        },
       });
       window.dispatchEvent(rotationDrag);
     }
@@ -201,13 +249,14 @@ class RadialSliderView extends React.Component {
             Current: {currTemperature}°F
           </text>
         </svg>
-        <p>Mode: {mode}</p>
 
         {/* External UI (for testing) */}
-        <Thermometer
-          currTemperature={currTemperature}
-          onTemperatureChange={this.handleCurrTempChange}
-        />
+        <p>
+          <Thermometer
+            currTemperature={currTemperature}
+            onTemperatureChange={this.handleCurrTempChange}
+          />
+        </p>
       </div>
     );
   }
