@@ -21,7 +21,6 @@ class Thermometer extends React.Component {
     if (this.props.currTemperature >= 32 && this.props.currTemperature <= 100) {
       this.setState({ error: false });
     } else {
-      console.log(this.props.currTemperature);
       this.setState({ error: true });
     }
   }

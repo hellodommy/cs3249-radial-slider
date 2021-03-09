@@ -1,16 +1,9 @@
 import React from "react";
 import { Machine, interpret } from "xstate";
 
-import { calculateTargetTemp } from '../Model/RadialSlider.Model'
+import { calculateTargetTemp, degToRad, radToDeg, multiple } from '../Model/RadialSliderModel'
 import thermostatMachine from "../ThermostatMachine";
 import Thermometer from "../Thermometer";
-
-function degToRad(deg) {
-  /**
-   * Helper function to convert degree to radians
-   */
-  return (deg * Math.PI) / 180;
-}
 
 function getKnobCoords(mouseCoords) {
   /**
@@ -20,8 +13,8 @@ function getKnobCoords(mouseCoords) {
   return [200 - Math.cos(rad) * 200, 200 - Math.sin(rad) * 200];
 }
 
-const xknobStart = 200 - Math.cos(degToRad(174)) * 200;
-const yknobStart = 200 - Math.sin(degToRad(174)) * 200;
+const xknobStart = 200 - Math.cos(degToRad((72 - 50) * multiple - 45)) * 200;
+const yknobStart = 200 - Math.sin(degToRad((72 - 50) * multiple - 45)) * 200;
 
 class RadialSliderView extends React.Component {
   constructor(props) {
@@ -82,13 +75,17 @@ class RadialSliderView extends React.Component {
       const centreY = 250; // 50px margin and 200px radius
       const distFromX = centreX - this.state.xcord;
       const distFromY = centreY - this.state.ycord;
-      const targetTemperature = calculateTargetTemp([distFromX, distFromY]);
-      const knobCoords = getKnobCoords([distFromX, distFromY]);
-      this.setState({ xknob: knobCoords[0], yknob: knobCoords[1] });
-      this.service.send({
-        type: "TARGET_TEMP_CHANGE",
-        targetTemp: targetTemperature,
-      });
+      const rad = Math.atan2(distFromY, distFromX);
+      const deg = radToDeg(rad);
+      if (deg >= -45 || deg <= -135) {
+        const targetTemperature = calculateTargetTemp([distFromX, distFromY]);
+        const knobCoords = getKnobCoords([distFromX, distFromY]);
+        this.setState({ xknob: knobCoords[0], yknob: knobCoords[1] });
+        this.service.send({
+          type: "TARGET_TEMP_CHANGE",
+          targetTemp: targetTemperature,
+        });
+      }
     }
   }
 
@@ -101,10 +98,17 @@ class RadialSliderView extends React.Component {
   }
 
   render() {
+    /**
+     * Values taken from XState Context
+     */
     const currTemperature = this.state.current.context.currTemp;
     const targetTemperature = this.state.current.context.targetTemp;
     const mode = this.state.current.value;
     const colour = this.state.current.context.colour;
+
+    /**
+     * Values taken from React State
+     */
     const xknob = this.state.xknob;
     const yknob = this.state.yknob;
     return (
@@ -146,11 +150,11 @@ class RadialSliderView extends React.Component {
         </svg>
         <p>Mode: {mode}</p>
 
+        {/* External UI (for testing) */}
         <Thermometer
           currTemperature={currTemperature}
           onTemperatureChange={this.handleCurrTempChange}
         />
-        
       </div>
     );
   }
