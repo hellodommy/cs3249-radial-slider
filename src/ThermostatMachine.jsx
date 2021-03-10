@@ -82,18 +82,18 @@ const thermostatMachine = Machine(
     guards: {
       isHot: (context, event) => {
         return (
-          context.currTemp > context.targetTemp + context.dT + context.dTCool
+          context.currTemp >= context.targetTemp + context.dT + context.dTCool
         );
       },
       isCold: (context, event) => {
         return (
-          context.currTemp < context.targetTemp - context.dT - context.dTHeat
+          context.currTemp <= context.targetTemp - context.dT - context.dTHeat
         );
       },
       isNormal: (context, event) => {
         return (
-          context.currTemp <= context.targetTemp + context.dT + context.dTCool &&
-          context.currTemp >= context.targetTemp - context.dT - context.dTHeat
+          context.currTemp < context.targetTemp + context.dT + context.dTCool &&
+          context.currTemp > context.targetTemp - context.dT - context.dTHeat
         );
       },
     },
