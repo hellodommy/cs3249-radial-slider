@@ -79,14 +79,12 @@ function normaliseDeg(deg) {
   }
 }
 
-const xknobStart = 200 - Math.cos(degToRad((72 - 50) * multiple - 45)) * 200;
-const yknobStart = 200 - Math.sin(degToRad((72 - 50) * multiple - 45)) * 200;
-
 class RadialSliderView extends React.Component {
   constructor(props) {
     super(props);
     this.handleMouseMove = this.handleMouseMove.bind(this);
     this.handleMouseDown = this.handleMouseDown.bind(this);
+    this.handleScroll = this.handleScroll.bind(this);
     this.handleMouseUp = this.handleMouseUp.bind(this);
     this.handleCurrTempChange = this.handleCurrTempChange.bind(this);
     this.updateTarget = this.updateTarget.bind(this);
@@ -95,9 +93,8 @@ class RadialSliderView extends React.Component {
     this.componentWillUnmount = this.componentWillUnmount.bind(this);
     this.updateWindowDimensions = this.updateWindowDimensions.bind(this);
     this.state = {
+      angle: 12 * multiple + 45,
       windowWidth: window.innerWidth,
-      xknob: xknobStart,
-      yknob: yknobStart,
       isMouseDown: false,
       current: thermostatMachine.initialState,
     };
@@ -152,15 +149,11 @@ class RadialSliderView extends React.Component {
   }
 
   handleRotationDrag(e) {
-    const deg = getAngle(
-      this.state.windowWidth,
-      e.detail.mouseX,
-      e.detail.mouseY
-    );
-    if (deg >= -45 || deg <= -135) {
+    const deg = e.detail.deg;
+    if ((deg >= -45) || (deg < -135 && deg > -180)) {
+      console.log(deg)
       // if angle is in valid zone
-      const knobCoords = getKnobCoords(deg);
-      this.setState({ xknob: knobCoords[0], yknob: knobCoords[1] });
+      this.setState({ angle: deg });
 
       const newTargetTemp = calculateTargetTemp(deg);
       if (newTargetTemp !== this.state.current.context.targetTemp) {
@@ -174,12 +167,28 @@ class RadialSliderView extends React.Component {
     }
   }
 
+  handleScroll(e) {
+    e.preventDefault();
+    let deg = this.state.angle + e.deltaY * 0.1;
+    if (deg >= 180) {
+      deg = deg - 360;
+    } else if (deg <= -180) {
+      deg = 180 + e.deltaY * 0.1;
+    }
+    var rotationDrag = new CustomEvent("rotationDrag", {
+      detail: {
+        deg: deg,
+      },
+    });
+    window.dispatchEvent(rotationDrag);
+  }
+
   handleMouseMove(e) {
     if (this.state.isMouseDown) {
+      const deg = getAngle(this.state.windowWidth, e.pageX, e.pageY);
       var rotationDrag = new CustomEvent("rotationDrag", {
         detail: {
-          mouseX: e.pageX,
-          mouseY: e.pageY,
+          deg: deg,
         },
       });
       window.dispatchEvent(rotationDrag);
@@ -206,8 +215,8 @@ class RadialSliderView extends React.Component {
     /**
      * Values taken from React State
      */
-    const xknob = this.state.xknob;
-    const yknob = this.state.yknob;
+    const xknob = getKnobCoords(this.state.angle)[0];
+    const yknob = getKnobCoords(this.state.angle)[1];
 
     /**
      * Radial Slider View Component
@@ -217,6 +226,7 @@ class RadialSliderView extends React.Component {
         <svg width="400px" height="400px" overflow="visible">
           <circle
             id="slider-body"
+            onWheel={this.handleScroll}
             onMouseMove={this.handleMouseMove}
             onMouseUp={this.handleMouseUp}
             fill={colour}
