@@ -63,7 +63,10 @@ function calculateTargetTemp(deg) {
    * Determines the target temperature depending on the angle
    */
   const normalisedDeg = normaliseDeg(deg);
-  const targetTemperature = Math.floor(normalisedDeg / multiple) + 50;
+  const targetTemperature = (Math.floor(normalisedDeg / multiple * 2) + 100) / 2;
+  if (targetTemperature === 80.5) {
+    return 80;
+  }
   return targetTemperature;
 }
 
@@ -180,6 +183,7 @@ class RadialSliderView extends React.Component {
   }
 
   handleScroll(e) {
+    this.setState({ isMouseDown: false })
     e.preventDefault();
     const deg = getScrollDeg(this.state.angle, e.deltaY);
     var rotationDrag = new CustomEvent("rotationDrag", {

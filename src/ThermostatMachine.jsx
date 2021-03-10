@@ -92,8 +92,8 @@ const thermostatMachine = Machine(
       },
       isNormal: (context, event) => {
         return (
-          context.currTemp < context.targetTemp + context.dT + context.dTCool &&
-          context.currTemp > context.targetTemp - context.dT - context.dTHeat
+          context.currTemp <= context.targetTemp + context.dT + context.dTCool &&
+          context.currTemp >= context.targetTemp - context.dT - context.dTHeat
         );
       },
     },
