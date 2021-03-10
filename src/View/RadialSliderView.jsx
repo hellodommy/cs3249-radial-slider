@@ -45,6 +45,19 @@ function getColour(mode) {
 
 const multiple = 270 / 31; // angle range of each fahrenheit
 
+function getScrollDeg(angle, deltaY) {
+  /**
+   * Determines the angle achieved from scrolling on the slider
+   */
+  let deg = angle + deltaY * 0.05;
+  if (deg >= 180) {
+    deg = deg - 360;
+  } else if (deg <= -180) {
+    deg = 180 + deltaY * 0.05;
+  }
+  return deg;
+}
+
 function calculateTargetTemp(deg) {
   /**
    * Determines the target temperature depending on the angle
@@ -52,6 +65,17 @@ function calculateTargetTemp(deg) {
   const normalisedDeg = normaliseDeg(deg);
   const targetTemperature = Math.floor(normalisedDeg / multiple) + 50;
   return targetTemperature;
+}
+
+function normaliseDeg(deg) {
+  /**
+   * Helper function to adjust the angle to relative axis starting at -45deg
+   */
+  if (deg >= -45 && deg <= 180) {
+    return deg + 45;
+  } else {
+    return deg + 405;
+  }
 }
 
 function degToRad(deg) {
@@ -66,17 +90,6 @@ function radToDeg(rad) {
    * Helper function to convert radians to degree
    */
   return (rad * 180) / Math.PI;
-}
-
-function normaliseDeg(deg) {
-  /**
-   * Adjusts the angle to relative axis starting at -45deg
-   */
-  if (deg >= -45 && deg <= 180) {
-    return deg + 45;
-  } else {
-    return deg + 405;
-  }
 }
 
 class RadialSliderView extends React.Component {
@@ -151,7 +164,6 @@ class RadialSliderView extends React.Component {
   handleRotationDrag(e) {
     const deg = e.detail.deg;
     if ((deg >= -45) || (deg < -135 && deg > -180)) {
-      console.log(deg)
       // if angle is in valid zone
       this.setState({ angle: deg });
 
@@ -169,12 +181,7 @@ class RadialSliderView extends React.Component {
 
   handleScroll(e) {
     e.preventDefault();
-    let deg = this.state.angle + e.deltaY * 0.1;
-    if (deg >= 180) {
-      deg = deg - 360;
-    } else if (deg <= -180) {
-      deg = 180 + e.deltaY * 0.1;
-    }
+    const deg = getScrollDeg(this.state.angle, e.deltaY);
     var rotationDrag = new CustomEvent("rotationDrag", {
       detail: {
         deg: deg,
